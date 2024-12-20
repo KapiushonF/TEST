@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日祝福</title>
+    <style>
+        /* 保持原有的样式不变 */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>生日祝福</h1>
+
+        <div class="slideshow-container">
+            <div class="mySlides fade">
+                <img src="https://picsum.photos/800/300?random=1" alt="随机图片1">
+            </div>
+            <div class="mySlides fade">
+                <img src="https://picsum.photos/800/300?random=2" alt="随机图片2">
+            </div>
+            <div class="mySlides fade">
+                <img src="https://picsum.photos/800/300?random=3" alt="随机图片3">
+            </div>
+        </div>
+
+        <div id="message-form">
+            <textarea id="message" placeholder="请输入留言内容" rows="4"></textarea>
+            <button id="submit">提交留言</button>
+        </div>
+        <div id="message-list"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const messageInput = document.getElementById('message');
+            const submitButton = document.getElementById('submit');
+            const messageList = document.getElementById('message-list');
+
+            // 从 localStorage 加载留言
+            loadMessages();
+
+            submitButton.addEventListener('click', () => {
+                const message = messageInput.value.trim();
+
+                if (message) {
+                    addMessage(message);
+                    messageInput.value = '';
+                } else {
+                    alert('请输入留言内容！');
+                }
+            });
+
+            function addMessage(message) {
+                const messageObj = {
+                    content: message,
+                    timestamp: new Date().toLocaleString()
+                };
+
+                // 添加新留言到 DOM
+                const messageElement = createMessageElement(messageObj);
+                messageList.prepend(messageElement);
+
+                // 保存留言到 localStorage
+                saveMessage(messageObj);
+            }
+
+            function createMessageElement(messageObj) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                messageElement.innerHTML = `
+                    <p>${messageObj.content}</p>
+                    <small>${messageObj.timestamp}</small>
+                `;
+                return messageElement;
+            }
+
+            function saveMessage(messageObj) {
+                let messages = JSON.parse(localStorage.getItem('messages')) || [];
+                messages.unshift(messageObj);
+                localStorage.setItem('messages', JSON.stringify(messages));
+            }
+
+            function loadMessages() {
+                const messages = JSON.parse(localStorage.getItem('messages')) || [];
+                messages.forEach(messageObj => {
+                    const messageElement = createMessageElement(messageObj);
+                    messageList.appendChild(messageElement);
+                });
+            }
+        });
+
+        // 图片轮播脚本保持不变
+        let slideIndex = 0;
+        showSlides();
+
+        function showSlides() {
+            let i;
+            let slides = document.getElementsByClassName("mySlides");
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            slideIndex++;
+            if (slideIndex > slides.length) {slideIndex = 1}    
+            slides[slideIndex-1].style.display = "block";  
+            setTimeout(showSlides, 5000); // 每5秒切换一次图片
+        }
+    </script>
+</body>
+</html>
